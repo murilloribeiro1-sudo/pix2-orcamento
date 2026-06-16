@@ -845,8 +845,8 @@
   <!-- ── PAINEL DIREITO ── -->
   <div class="panel-right" id="panel-preview">
 
-    <div id="tab-preview" style="display:none">
-      <div class="preview-label">Proposta ao Cliente</div>
+    <div id="tab-preview">
+      <div class="preview-label">Proposta ao Cliente <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;margin-left:8px">— atualização em tempo real</span></div>
       <div class="preview-wrap">
         <div class="proposta" id="proposta-aberta">
           <div class="empty-state">
@@ -854,21 +854,11 @@
             <p>Preencha os dados no formulário<br>e a proposta aparecerá aqui.</p>
           </div>
         </div>
-        <div style="display:flex;gap:10px;margin-top:16px">
+        <div style="display:flex;gap:10px;margin-top:16px" id="preview-buttons">
           <button class="btn-primary" onclick="gerarPDF('aberta')">⬇ Baixar Proposta Detalhada</button>
           <button class="btn-secondary" onclick="gerarPDF('fechada')">⬇ Baixar Proposta Fechada</button>
         </div>
       </div>
-    </div>
-
-    <div id="tab-briefing-right" style="padding:40px;text-align:center;color:var(--muted)">
-      <div style="font-size:40px;margin-bottom:20px">📋</div>
-      <p style="font-size:13px;line-height:1.8">Preencha os campos ao lado<br>e vá para <strong style="color:var(--text)">Equipe & Custos</strong><br>para configurar os valores.</p>
-    </div>
-
-    <div id="tab-equipe-right" style="display:none;padding:40px;text-align:center;color:var(--muted)">
-      <div style="font-size:40px;margin-bottom:20px">🧮</div>
-      <p style="font-size:13px;line-height:1.8">Configure equipe e valores ao lado.<br>Quando estiver pronto, clique em<br><strong style="color:var(--text)">Preview & PDF</strong> para ver a proposta.</p>
     </div>
 
   </div>
@@ -977,15 +967,14 @@ function showTab(tab) {
   document.getElementById('tab-briefing').style.display = tab === 'briefing' ? 'block' : 'none';
   document.getElementById('tab-equipe').style.display = tab === 'equipe' ? 'block' : 'none';
 
-  document.getElementById('tab-briefing-right').style.display = tab === 'briefing' ? 'block' : 'none';
-  document.getElementById('tab-equipe-right').style.display = tab === 'equipe' ? 'block' : 'none';
-  document.getElementById('tab-preview').style.display = tab === 'preview' ? 'block' : 'none';
-
   document.getElementById('panel-form').style.display = (tab === 'producao') ? 'none' : 'block';
   document.querySelector('.app-body').style.display = (tab === 'producao') ? 'none' : 'grid';
   document.getElementById('tab-producao').style.display = (tab === 'producao') ? 'block' : 'none';
 
-  if (tab === 'preview') renderProposta();
+  // Botões de download só aparecem na aba Preview & PDF
+  document.getElementById('preview-buttons').style.display = (tab === 'preview') ? 'flex' : 'none';
+
+  if (tab !== 'producao') renderProposta();
   if (tab === 'producao') renderOrdemProducao();
 }
 
@@ -1062,7 +1051,7 @@ function updateExtra(id, field, val) {
 }
 
 // ── CÁLCULO ──
-function calcular() {
+function calcularValores() {
   const cache = +document.getElementById('cache-valor').value || 0;
   const cacheNfPct = +document.getElementById('cache-nf').value || 0;
   const markup = +document.getElementById('markup').value || 0;
@@ -1079,19 +1068,29 @@ function calcular() {
 
   const total = cache + nfCache + valorServicos + nfServicos;
 
+  return { cache, nfCache, custoCrew, custoExtra, custoServicos, valorServicos, nfServicos, total, markup, nfServPct, cacheNfPct };
+}
+
+function calcular() {
+  const calc = calcularValores();
+
   // Atualizar resumo
-  document.getElementById('r-cache').textContent = fmt(cache);
-  document.getElementById('r-nf-cache').textContent = fmt(nfCache);
-  document.getElementById('r-custo').textContent = fmt(custoServicos);
-  document.getElementById('r-markup').textContent = fmt(valorServicos - custoServicos);
-  document.getElementById('r-nf-serv').textContent = fmt(nfServicos);
-  document.getElementById('r-total').textContent = fmt(total);
+  document.getElementById('r-cache').textContent = fmt(calc.cache);
+  document.getElementById('r-nf-cache').textContent = fmt(calc.nfCache);
+  document.getElementById('r-custo').textContent = fmt(calc.custoServicos);
+  document.getElementById('r-markup').textContent = fmt(calc.valorServicos - calc.custoServicos);
+  document.getElementById('r-nf-serv').textContent = fmt(calc.nfServicos);
+  document.getElementById('r-total').textContent = fmt(calc.total);
 
   // Badge header
   const orcNum = document.getElementById('orc-num').value || 'ORC-2026-???';
   document.getElementById('orc-badge-header').textContent = orcNum;
 
-  return { cache, nfCache, custoCrew, custoExtra, custoServicos, valorServicos, nfServicos, total, markup, nfServPct, cacheNfPct };
+  // Live update da proposta (exceto na aba Ordem de Produção)
+  const tabProducaoAtiva = document.getElementById('tab-producao').style.display === 'block';
+  if (!tabProducaoAtiva) renderProposta(calc);
+
+  return calc;
 }
 
 function fmt(v) {
@@ -1099,8 +1098,8 @@ function fmt(v) {
 }
 
 // ── RENDER PROPOSTA ──
-function renderProposta() {
-  const calc = calcular();
+function renderProposta(calc) {
+  if (!calc) calc = calcularValores();
   const empresa = document.getElementById('empresa').value;
   const cnpj = empresa.includes('Design') ? '20.067.159/0001-30' : '03.097.840/0001-02';
   const cidade = empresa.includes('Design') ? 'Campina Grande do Sul/PR' : 'São José dos Pinhais/PR';
@@ -1199,7 +1198,7 @@ function renderProposta() {
 
 // ── GERAR PDF ──
 function gerarPDF(tipo) {
-  const calc = calcular();
+  const calc = calcularValores();
   const empresa = document.getElementById('empresa').value;
   const cnpj = empresa.includes('Design') ? '20.067.159/0001-30' : '03.097.840/0001-02';
   const cidade = empresa.includes('Design') ? 'Campina Grande do Sul/PR' : 'São José dos Pinhais/PR';
@@ -1347,7 +1346,7 @@ ${corpo}
 
 // ── ORDEM DE PRODUÇÃO (DOCUMENTO INTERNO) ──
 function renderOrdemProducao() {
-  const calc = calcular();
+  const calc = calcularValores();
   const orcNum = document.getElementById('orc-num').value || 'ORC-2026-???';
   const projeto = document.getElementById('projeto').value || '—';
   const cliente = document.getElementById('cliente').value || '—';
@@ -1414,7 +1413,7 @@ function renderOrdemProducao() {
 
 function gerarPDFProducao() {
   renderOrdemProducao();
-  const calc = calcular();
+  const calc = calcularValores();
   const orcNum = document.getElementById('orc-num').value || 'ORC-2026-???';
   const projeto = document.getElementById('projeto').value || '—';
   const cliente = document.getElementById('cliente').value || '—';
