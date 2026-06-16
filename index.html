@@ -518,10 +518,7 @@
   }
 
   .prop-assinatura {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
     padding: 28px;
-    gap: 28px;
     background: #fff;
     color: #111;
   }
@@ -557,6 +554,28 @@
     font-size: 9px;
     color: #aaa;
     font-family: 'DM Mono', monospace;
+  }
+
+  .ass-linha-dupla {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 24px;
+  }
+
+  .ass-linha-item {
+    border-top: 1px solid #ccc;
+    padding-top: 6px;
+    font-size: 9px;
+    color: #aaa;
+    font-family: 'DM Mono', monospace;
+    text-align: center;
+  }
+
+  .prop-assinatura {
+    padding: 28px;
+    background: #fff;
+    color: #111;
   }
 
   .prop-footer {
@@ -653,6 +672,7 @@
   <div class="tab active" onclick="showTab('briefing')">Briefing</div>
   <div class="tab" onclick="showTab('equipe')">Equipe & Custos</div>
   <div class="tab" onclick="showTab('preview')">Preview & PDF</div>
+  <div class="tab" onclick="showTab('producao')" style="margin-left:auto;color:var(--accent2)">📋 Ordem de Produção</div>
 </div>
 
 <div class="app-body">
@@ -668,8 +688,8 @@
         <div class="field">
           <label>Empresa PIX2</label>
           <select id="empresa" onchange="calcular()">
-            <option value="PIX2 Produção de Conteúdo LTDA">PIX2 Produção de Conteúdo LTDA — CNPJ 20.067.159/0001-30</option>
-            <option value="PIX2 Criação de Conteúdos Ltda">PIX2 Criação de Conteúdos Ltda — CNPJ 03.097.840/0001-02</option>
+            <option value="PIX2 Produção de Conteúdo LTDA">PIX2 Produção de Conteúdo LTDA — CNPJ 03.097.840/0001-02</option>
+            <option value="PIX2 Design LTDA">PIX2 Design LTDA — CNPJ 20.067.159/0001-30</option>
           </select>
         </div>
         <div class="field-row">
@@ -855,6 +875,75 @@
 
 </div>
 
+<!-- ── ORDEM DE PRODUÇÃO (FULL WIDTH, DOCUMENTO INTERNO) ── -->
+<div id="tab-producao" style="display:none;padding:32px;max-width:900px;margin:0 auto">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+    <div>
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700">Ordem de Produção — Documento Interno</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">Uso exclusivo PIX2 · não é enviado ao cliente · controle de pagamento da equipe</div>
+    </div>
+    <button class="btn-primary" style="width:auto;padding:12px 24px" onclick="gerarPDFProducao()">⬇ Baixar PDF Interno</button>
+  </div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:24px;margin-bottom:20px">
+    <div class="section-title" style="margin-bottom:14px">Resumo do Projeto</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;font-size:11px">
+      <div><span style="color:var(--muted)">ORC:</span> <span id="op-orc">—</span></div>
+      <div><span style="color:var(--muted)">Projeto:</span> <span id="op-projeto">—</span></div>
+      <div><span style="color:var(--muted)">Cliente:</span> <span id="op-cliente">—</span></div>
+    </div>
+  </div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:24px;margin-bottom:20px">
+    <div class="section-title" style="margin-bottom:14px">Elenco / Talento</div>
+    <table style="width:100%;font-size:11px;border-collapse:collapse">
+      <thead>
+        <tr style="border-bottom:1px solid var(--border);color:var(--muted);text-align:left">
+          <th style="padding:8px 4px">Nome</th>
+          <th style="padding:8px 4px">Função</th>
+          <th style="padding:8px 4px;text-align:right">Cachê (R$)</th>
+        </tr>
+      </thead>
+      <tbody id="op-elenco-body"></tbody>
+    </table>
+  </div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:24px;margin-bottom:20px">
+    <div class="section-title" style="margin-bottom:14px">Equipe Técnica</div>
+    <table style="width:100%;font-size:11px;border-collapse:collapse">
+      <thead>
+        <tr style="border-bottom:1px solid var(--border);color:var(--muted);text-align:left">
+          <th style="padding:8px 4px">Cargo</th>
+          <th style="padding:8px 4px;text-align:center">Diárias</th>
+          <th style="padding:8px 4px;text-align:right">Valor/Diária (R$)</th>
+          <th style="padding:8px 4px;text-align:right">Total (R$)</th>
+        </tr>
+      </thead>
+      <tbody id="op-crew-body"></tbody>
+    </table>
+  </div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:24px;margin-bottom:20px" id="op-extras-wrap">
+    <div class="section-title" style="margin-bottom:14px">Itens Adicionais</div>
+    <table style="width:100%;font-size:11px;border-collapse:collapse">
+      <thead>
+        <tr style="border-bottom:1px solid var(--border);color:var(--muted);text-align:left">
+          <th style="padding:8px 4px">Descrição</th>
+          <th style="padding:8px 4px;text-align:right">Valor (R$)</th>
+        </tr>
+      </thead>
+      <tbody id="op-extras-body"></tbody>
+    </table>
+  </div>
+
+  <div style="background:rgba(240,192,64,0.05);border:1px solid var(--border);border-radius:6px;padding:20px 24px;display:flex;justify-content:space-between;align-items:center">
+    <span style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Custo Total da Produção</span>
+    <span style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--accent)" id="op-custo-total">R$ 0</span>
+  </div>
+
+</div>
+
 <script>
 // ── LOGOS ──
 
@@ -882,7 +971,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ── TABS ──
 function showTab(tab) {
   document.querySelectorAll('.tab').forEach((t,i) => {
-    t.classList.toggle('active', ['briefing','equipe','preview'][i] === tab);
+    t.classList.toggle('active', ['briefing','equipe','preview','producao'][i] === tab);
   });
 
   document.getElementById('tab-briefing').style.display = tab === 'briefing' ? 'block' : 'none';
@@ -892,7 +981,12 @@ function showTab(tab) {
   document.getElementById('tab-equipe-right').style.display = tab === 'equipe' ? 'block' : 'none';
   document.getElementById('tab-preview').style.display = tab === 'preview' ? 'block' : 'none';
 
+  document.getElementById('panel-form').style.display = (tab === 'producao') ? 'none' : 'block';
+  document.querySelector('.app-body').style.display = (tab === 'producao') ? 'none' : 'grid';
+  document.getElementById('tab-producao').style.display = (tab === 'producao') ? 'block' : 'none';
+
   if (tab === 'preview') renderProposta();
+  if (tab === 'producao') renderOrdemProducao();
 }
 
 // ── CREW ──
@@ -1008,8 +1102,8 @@ function fmt(v) {
 function renderProposta() {
   const calc = calcular();
   const empresa = document.getElementById('empresa').value;
-  const cnpj = empresa.includes('20.067') ? '20.067.159/0001-30' : '03.097.840/0001-02';
-  const cidade = empresa.includes('20.067') ? 'Campina Grande do Sul/PR' : 'São José dos Pinhais/PR';
+  const cnpj = empresa.includes('Design') ? '20.067.159/0001-30' : '03.097.840/0001-02';
+  const cidade = empresa.includes('Design') ? 'Campina Grande do Sul/PR' : 'São José dos Pinhais/PR';
   const orcNum = document.getElementById('orc-num').value || 'ORC-2026-???';
   const dataVal = document.getElementById('data').value;
   const dataFmt = dataVal ? new Date(dataVal + 'T12:00:00').toLocaleDateString('pt-BR') : '';
@@ -1087,13 +1181,10 @@ function renderProposta() {
         <div class="ass-label">Contratado</div>
         <div class="ass-nome">Murillo Ribeiro</div>
         <div class="ass-sub">${empresa}<br>${cnpj}</div>
-        <div class="ass-linha">Assinatura / Carimbo</div>
-      </div>
-      <div class="prop-ass-block">
-        <div class="ass-label">Contratante</div>
-        <div class="ass-nome">${cliente}</div>
-        <div class="ass-sub">&nbsp;</div>
-        <div class="ass-linha">Assinatura / Carimbo</div>
+        <div class="ass-linha-dupla">
+          <div class="ass-linha-item">Assinatura</div>
+          <div class="ass-linha-item">Carimbo</div>
+        </div>
       </div>
     </div>
 
@@ -1110,8 +1201,8 @@ function renderProposta() {
 function gerarPDF(tipo) {
   const calc = calcular();
   const empresa = document.getElementById('empresa').value;
-  const cnpj = empresa.includes('20.067') ? '20.067.159/0001-30' : '03.097.840/0001-02';
-  const cidade = empresa.includes('20.067') ? 'Campina Grande do Sul/PR' : 'São José dos Pinhais/PR';
+  const cnpj = empresa.includes('Design') ? '20.067.159/0001-30' : '03.097.840/0001-02';
+  const cidade = empresa.includes('Design') ? 'Campina Grande do Sul/PR' : 'São José dos Pinhais/PR';
   const orcNum = document.getElementById('orc-num').value || 'ORC-2026-???';
   const dataVal = document.getElementById('data').value;
   const dataFmt = dataVal ? new Date(dataVal + 'T12:00:00').toLocaleDateString('pt-BR') : '';
@@ -1193,7 +1284,9 @@ body{background:#0d0f14;color:#e8eaf2;font-family:'DM Mono',monospace;font-size:
 .prop-total-card{padding:20px 28px;background:rgba(240,192,64,0.05);border-bottom:1px solid #22263a;display:flex;justify-content:space-between;align-items:center}
 .prop-total-label{font-family:'Syne',sans-serif;font-size:12px;font-weight:600;color:#6b7099;letter-spacing:1px;text-transform:uppercase}
 .prop-total-valor{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#f0c040}
-.prop-assinatura{display:grid;grid-template-columns:1fr 1fr;padding:28px;gap:28px;background:#fff;color:#111}
+.prop-assinatura{padding:28px;background:#fff;color:#111}
+.ass-linha-dupla{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px}
+.ass-linha-item{border-top:1px solid #ccc;padding-top:6px;font-size:9px;color:#aaa;font-family:'DM Mono',monospace;text-align:center}
 .ass-label{font-size:9px;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;font-family:'DM Mono',monospace}
 .ass-nome{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#111;margin-bottom:2px}
 .ass-sub{font-size:10px;color:#555;font-family:'DM Mono',monospace;line-height:1.5}
@@ -1234,19 +1327,173 @@ ${corpo}
     <div class="ass-label">Contratado</div>
     <div class="ass-nome">Murillo Ribeiro</div>
     <div class="ass-sub">${empresa}<br>${cnpj}</div>
-    <div class="ass-linha">Assinatura / Carimbo</div>
-  </div>
-  <div>
-    <div class="ass-label">Contratante</div>
-    <div class="ass-nome">${cliente}</div>
-    <div class="ass-sub">&nbsp;</div>
-    <div class="ass-linha">Assinatura / Carimbo</div>
+    <div class="ass-linha-dupla">
+      <div class="ass-linha-item">Assinatura</div>
+      <div class="ass-linha-item">Carimbo</div>
+    </div>
   </div>
 </div>
 <div class="prop-footer">
   <span>${empresa} · ${cnpj}</span>
   <span>${cidade} · ${orcNum} · ${dataFmt}</span>
 </div>
+</body></html>`;
+
+  const blob = new Blob([htmlPDF], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, '_blank');
+  setTimeout(() => { win.print(); }, 1500);
+}
+
+// ── ORDEM DE PRODUÇÃO (DOCUMENTO INTERNO) ──
+function renderOrdemProducao() {
+  const calc = calcular();
+  const orcNum = document.getElementById('orc-num').value || 'ORC-2026-???';
+  const projeto = document.getElementById('projeto').value || '—';
+  const cliente = document.getElementById('cliente').value || '—';
+  const artistaNome = document.getElementById('artista-nome').value || '—';
+  const cache = +document.getElementById('cache-valor').value || 0;
+
+  document.getElementById('op-orc').textContent = orcNum;
+  document.getElementById('op-projeto').textContent = projeto;
+  document.getElementById('op-cliente').textContent = cliente;
+
+  // Elenco
+  const elencoBody = document.getElementById('op-elenco-body');
+  elencoBody.innerHTML = '';
+  if (artistaNome !== '—' && artistaNome !== '') {
+    elencoBody.innerHTML = `
+      <tr style="border-bottom:1px solid rgba(34,38,58,0.5)">
+        <td style="padding:8px 4px">${artistaNome}</td>
+        <td style="padding:8px 4px;color:var(--muted)">Talento / Elenco</td>
+        <td style="padding:8px 4px;text-align:right">${fmt(cache)}</td>
+      </tr>`;
+  } else {
+    elencoBody.innerHTML = `<tr><td colspan="3" style="padding:8px 4px;color:var(--muted)">Nenhum talento cadastrado</td></tr>`;
+  }
+
+  // Equipe técnica
+  const crewBody = document.getElementById('op-crew-body');
+  crewBody.innerHTML = '';
+  if (crewItems.filter(c => c.cargo).length === 0) {
+    crewBody.innerHTML = `<tr><td colspan="4" style="padding:8px 4px;color:var(--muted)">Nenhum profissional cadastrado</td></tr>`;
+  } else {
+    crewItems.filter(c => c.cargo).forEach(c => {
+      crewBody.innerHTML += `
+        <tr style="border-bottom:1px solid rgba(34,38,58,0.5)">
+          <td style="padding:8px 4px">${c.cargo}</td>
+          <td style="padding:8px 4px;text-align:center">${c.diarias}</td>
+          <td style="padding:8px 4px;text-align:right">${fmt(c.valor)}</td>
+          <td style="padding:8px 4px;text-align:right">${fmt(c.valor * c.diarias)}</td>
+        </tr>`;
+    });
+  }
+
+  // Extras
+  const extrasWrap = document.getElementById('op-extras-wrap');
+  const extrasBody = document.getElementById('op-extras-body');
+  const extrasValidos = extraItems.filter(e => e.desc);
+  if (extrasValidos.length === 0) {
+    extrasWrap.style.display = 'none';
+  } else {
+    extrasWrap.style.display = 'block';
+    extrasBody.innerHTML = '';
+    extrasValidos.forEach(e => {
+      extrasBody.innerHTML += `
+        <tr style="border-bottom:1px solid rgba(34,38,58,0.5)">
+          <td style="padding:8px 4px">${e.desc}</td>
+          <td style="padding:8px 4px;text-align:right">${fmt(e.valor)}</td>
+        </tr>`;
+    });
+  }
+
+  // Custo total real (sem markup, sem NF — só o que sai do caixa da produtora)
+  const custoTotalReal = cache + calc.custoCrew + calc.custoExtra;
+  document.getElementById('op-custo-total').textContent = fmt(custoTotalReal);
+}
+
+function gerarPDFProducao() {
+  renderOrdemProducao();
+  const calc = calcular();
+  const orcNum = document.getElementById('orc-num').value || 'ORC-2026-???';
+  const projeto = document.getElementById('projeto').value || '—';
+  const cliente = document.getElementById('cliente').value || '—';
+  const artistaNome = document.getElementById('artista-nome').value || '—';
+  const cache = +document.getElementById('cache-valor').value || 0;
+  const dataVal = document.getElementById('data').value;
+  const dataFmt = dataVal ? new Date(dataVal + 'T12:00:00').toLocaleDateString('pt-BR') : '';
+
+  const elencoRows = (artistaNome !== '—' && artistaNome !== '')
+    ? `<tr><td>${artistaNome}</td><td>Talento / Elenco</td><td style="text-align:right">${fmt(cache)}</td></tr>`
+    : `<tr><td colspan="3" style="color:#888">Nenhum talento cadastrado</td></tr>`;
+
+  const crewValid = crewItems.filter(c => c.cargo);
+  const crewRows = crewValid.length
+    ? crewValid.map(c => `<tr><td>${c.cargo}</td><td style="text-align:center">${c.diarias}</td><td style="text-align:right">${fmt(c.valor)}</td><td style="text-align:right">${fmt(c.valor*c.diarias)}</td></tr>`).join('')
+    : `<tr><td colspan="4" style="color:#888">Nenhum profissional cadastrado</td></tr>`;
+
+  const extrasValid = extraItems.filter(e => e.desc);
+  const extrasSection = extrasValid.length ? `
+    <div class="op-block">
+      <div class="op-title">Itens Adicionais</div>
+      <table><thead><tr><th>Descrição</th><th style="text-align:right">Valor (R$)</th></tr></thead>
+      <tbody>${extrasValid.map(e => `<tr><td>${e.desc}</td><td style="text-align:right">${fmt(e.valor)}</td></tr>`).join('')}</tbody></table>
+    </div>` : '';
+
+  const custoTotalReal = cache + calc.custoCrew + calc.custoExtra;
+
+  const htmlPDF = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0f14;color:#e8eaf2;font-family:'DM Mono',monospace;font-size:11px;width:794px;padding:32px}
+.op-header{margin-bottom:24px}
+.op-header .tag{display:inline-block;background:#f0c040;color:#000;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;padding:4px 10px;border-radius:4px;letter-spacing:1px;margin-bottom:10px}
+.op-header h1{font-family:'Syne',sans-serif;font-size:18px;font-weight:700}
+.op-header .sub{color:#6b7099;font-size:10px;margin-top:4px}
+.op-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;background:#181c2a;border:1px solid #22263a;border-radius:6px;padding:16px 20px;margin-bottom:20px;font-size:11px}
+.op-meta .ml{color:#6b7099}
+.op-block{background:#141720;border:1px solid #22263a;border-radius:6px;padding:20px;margin-bottom:16px}
+.op-title{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6b7099;margin-bottom:12px}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:6px 4px;border-bottom:1px solid #22263a;color:#6b7099;font-size:9px;text-transform:uppercase;letter-spacing:0.5px}
+td{padding:7px 4px;border-bottom:1px solid rgba(34,38,58,0.5)}
+.op-total{background:rgba(240,192,64,0.08);border:1px solid #22263a;border-radius:6px;padding:18px 20px;display:flex;justify-content:space-between;align-items:center}
+.op-total .label{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#6b7099;text-transform:uppercase;letter-spacing:1px}
+.op-total .val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#f0c040}
+.op-footer{margin-top:20px;font-size:9px;color:#6b7099;text-align:center}
+</style>
+</head>
+<body>
+<div class="op-header">
+  <div class="tag">DOCUMENTO INTERNO — NÃO ENVIAR AO CLIENTE</div>
+  <h1>Ordem de Produção</h1>
+  <div class="sub">Controle de equipe e pagamentos · PIX2</div>
+</div>
+<div class="op-meta">
+  <div><span class="ml">ORC:</span> ${orcNum}</div>
+  <div><span class="ml">Projeto:</span> ${projeto}</div>
+  <div><span class="ml">Cliente:</span> ${cliente}</div>
+</div>
+<div class="op-block">
+  <div class="op-title">Elenco / Talento</div>
+  <table><thead><tr><th>Nome</th><th>Função</th><th style="text-align:right">Cachê (R$)</th></tr></thead>
+  <tbody>${elencoRows}</tbody></table>
+</div>
+<div class="op-block">
+  <div class="op-title">Equipe Técnica</div>
+  <table><thead><tr><th>Cargo</th><th style="text-align:center">Diárias</th><th style="text-align:right">Valor/Diária</th><th style="text-align:right">Total</th></tr></thead>
+  <tbody>${crewRows}</tbody></table>
+</div>
+${extrasSection}
+<div class="op-total">
+  <span class="label">Custo Total da Produção</span>
+  <span class="val">${fmt(custoTotalReal)}</span>
+</div>
+<div class="op-footer">Gerado em ${dataFmt} · Documento de uso exclusivo PIX2 · Confidencial</div>
 </body></html>`;
 
   const blob = new Blob([htmlPDF], {type:'text/html'});
