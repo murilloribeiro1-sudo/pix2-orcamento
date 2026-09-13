@@ -148,6 +148,7 @@ async function api(path, body) {
   return data;
 }
 async function poll(job, onTick) {
+  if (job.status === 'COMPLETED' && job.output) return job.output;
   const qs = new URLSearchParams({ status_url: job.status_url, response_url: job.response_url, admin: state.admin });
   for (;;) {
     const r = await fetch('/api/result?' + qs.toString());
@@ -169,7 +170,8 @@ async function login(pass) {
     $('login').classList.add('hidden'); $('app').classList.remove('hidden');
     const c = state.cfg;
     $('pills').innerHTML =
-      `<span class="pill ${c.fal_key_set?'ok':'bad'}">FAL_KEY ${c.fal_key_set?'ok':'AUSENTE'}</span>` +
+      `<span class="pill ${c.fal_key_set?'ok':'bad'}">FAL_KEY (vídeo) ${c.fal_key_set?'ok':'AUSENTE'}</span>` +
+      `<span class="pill ${c.gemini_key_set?'ok':''}">imagens via ${c.image_provider === 'gemini' ? 'Gemini' : 'fal.ai'}</span>` +
       `<span class="pill ${c.refs_ok.character0?'ok':'bad'}">ref personagem ${c.refs_ok.character0?'ok':'faltando'}</span>` +
       `<span class="pill ${c.refs_ok.face?'ok':'bad'}">ref rosto ${c.refs_ok.face?'ok':'faltando'}</span>` +
       `<span class="pill ${c.refs_ok.outfit?'ok':'bad'}">ref roupa ${c.refs_ok.outfit?'ok':'faltando'}</span>` +
@@ -232,7 +234,7 @@ async function genLocation(n) {
     log(`Nano Banana → cenário "${local}" (${n} imagem${n>1?'ns':''})`);
     log(`Prompt: ${prompt}`, 'l-mut');
     const job = await api('/api/submit', { task:'location', local, assunto: $('servico').value, prompt, num_images: n });
-    log(`Job enviado: ${job.request_id}`);
+    log(job.provider === 'gemini' ? `Gemini respondeu (${job.model})` : `Job enviado: ${job.request_id}`);
     const out = await poll(job, d => { if (d.queue_position!=null) stage(`Cenário na fila (posição ${d.queue_position})`); });
     const imgs = (out.images || []).map(i => i.url);
     if (!imgs.length) throw new Error('Nenhuma imagem retornada: ' + JSON.stringify(out).slice(0,300));
@@ -241,7 +243,7 @@ async function genLocation(n) {
       : `<div class="thumbs">${imgs.map((u,i)=>`<img class="${i?'':'sel'}" src="${u}" data-u="${u}">`).join('')}</div><p class="l-mut">Clique para escolher.</p>`;
     state.locationUrl = imgs[0];
     $('locBox').querySelectorAll('.thumbs img').forEach(im => im.onclick = () => { $('locBox').querySelectorAll('img').forEach(x=>x.classList.remove('sel')); im.classList.add('sel'); state.locationUrl = im.dataset.u; log('Cenário escolhido: ' + im.dataset.u, 'l-mut'); });
-    log(`Cenário pronto em ${$('timer').textContent}: ${imgs[0]}`, 'l-ok');
+    log(`Cenário pronto em ${$('timer').textContent}: ${imgs[0].startsWith('data:') ? '(imagem embutida)' : imgs[0]}`, 'l-ok');
     stage('Cenário pronto. Revise o prompt e gere o comercial.');
     $('vidPrompt').value = vidPromptFromInputs();
     $('btnVid').disabled = false;
@@ -261,7 +263,7 @@ $('btnVid').onclick = async () => {
     log(`Seedance 2.5 → ${$('dur').value}s · ${$('res').value} · ${$('ar').value}`);
     log(`Prompt do vídeo:\n${prompt}`, 'l-mut');
     const job = await api('/api/submit', { task:'video', prompt, location_url: state.locationUrl, duration: $('dur').value, resolution: $('res').value, aspect_ratio: $('ar').value });
-    log(`Job enviado: ${job.request_id}. Referências: ${job.image_urls.join(' | ')}`);
+    log(`Job enviado: ${job.request_id}. Referências: ${job.image_urls.map(u => u.startsWith('data:') ? '(embutida)' : u).join(' | ')}`);
     let lastLog = '';
     const out = await poll(job, d => {
       stage(d.status === 'IN_QUEUE' ? `Comercial na fila (posição ${d.queue_position ?? '?'})` : 'Comercial renderizando…');

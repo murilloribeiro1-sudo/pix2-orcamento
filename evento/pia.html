@@ -106,6 +106,7 @@ $('btnGo').onclick = async () => {
     const job = await r.json().catch(()=>({error:'resposta inválida'}));
     if (!r.ok) throw new Error(job.error || `HTTP ${r.status}`);
     $('status').textContent = 'Na fila da IA…';
+    if (job.status === 'COMPLETED') { done(job.output); return; }
     const qs = new URLSearchParams({ status_url: job.status_url, response_url: job.response_url, code });
     for (;;) {
       await new Promise(res => setTimeout(res, 3000));
@@ -113,15 +114,7 @@ $('btnGo').onclick = async () => {
       const d = await s.json().catch(()=>({error:'resposta inválida'}));
       if (!s.ok) throw new Error(d.error || `HTTP ${s.status}`);
       if (d.status === 'FAILED') throw new Error(d.error || 'falha na geração');
-      if (d.status === 'COMPLETED') {
-        const url = d.output?.images?.[0]?.url;
-        if (!url) throw new Error('A IA não devolveu imagem. Tente outra selfie.');
-        $('bar').style.width = '100%';
-        $('res').src = url; $('dl').href = url;
-        $('step2').classList.add('hidden'); $('step3').classList.remove('hidden');
-        if (navigator.share) { $('share').classList.remove('hidden'); $('share').onclick = async () => { try { const b = await (await fetch(url)).blob(); const f = new File([b], 'eu-pia-do-parana.png', { type: b.type }); await navigator.share({ files:[f], title:'Eu como Piá do Paraná' }); } catch { window.open(url, '_blank'); } }; }
-        break;
-      }
+      if (d.status === 'COMPLETED') { done(d.output); break; }
       $('status').textContent = d.status === 'IN_QUEUE' ? `Na fila da IA (posição ${d.queue_position ?? '…'})` : 'Desenhando você…';
     }
   } catch (e) {
@@ -129,6 +122,14 @@ $('btnGo').onclick = async () => {
     $('msg').textContent = 'Deu erro: ' + e.message + ' — tente de novo.'; $('msg').className = 'err';
   } finally { clearInterval(tick); }
 };
+function done(output) {
+  const url = output?.images?.[0]?.url;
+  if (!url) throw new Error('A IA não devolveu imagem. Tente outra selfie.');
+  $('bar').style.width = '100%';
+  $('res').src = url; $('dl').href = url;
+  $('step2').classList.add('hidden'); $('step3').classList.remove('hidden');
+  if (navigator.share) { $('share').classList.remove('hidden'); $('share').onclick = async () => { try { const b = await (await fetch(url)).blob(); const f = new File([b], 'eu-pia-do-parana.png', { type: b.type }); await navigator.share({ files:[f], title:'Eu como Piá do Paraná' }); } catch { window.open(url, '_blank'); } }; }
+}
 $('again').onclick = () => { $('step3').classList.add('hidden'); $('step1').classList.remove('hidden'); $('bar').style.width='0'; };
 </script>
 </body>
