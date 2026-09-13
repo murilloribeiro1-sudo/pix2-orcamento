@@ -18,13 +18,13 @@ Fluxo por voz. Murillo fala, a plateia escolhe, você gera. Ele está no palco: 
 
 ## Roteiro
 
-1. **Coletar** (Murillo dita, você anota e não gera nada ainda):
+1. **Coletar** (Murillo dita tudo de uma vez; extraia os campos do que ele disse):
    - lugar
    - serviço/produto anunciado
    - fala literal do personagem (uma frase; se vier longa, avise em uma linha que 30 s comporta uma frase e peça para escolher)
    - ações extras (0 a 3)
    Endereços de site (ex.: poupatempo.gov.br) NÃO entram na fala: vão para o cartão final como texto. Na fala fica só o nome do app.
-   Confirme em UMA linha: "Itália · pizzaria · fala: '…' · ações: dança, cachorro. Gero o cenário?"
+   NÃO peça confirmação. Repita a leitura em UMA linha ("Itália · pizzaria · fala: '…' · ações: dança, cachorro. Gerando.") e dispare o cenário no mesmo turno. Só pare para perguntar se faltar o lugar ou a fala.
 
 2. **Cenário** (Nano Banana Pro, só o lugar, sem personagem, sem cena):
    `generate_image` com `model: nano_banana_pro`, `aspect_ratio: 16:9`, `count: 1`, prompt:
