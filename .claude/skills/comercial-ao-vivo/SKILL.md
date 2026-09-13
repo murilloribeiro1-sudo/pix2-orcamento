@@ -21,7 +21,7 @@ Fluxo por voz. Murillo fala, a plateia escolhe, você gera. Ele está no palco: 
 1. **Coletar** (Murillo dita tudo de uma vez; extraia os campos do que ele disse):
    - lugar
    - serviço/produto anunciado
-   - fala literal do personagem (uma frase; se vier longa, avise em uma linha que 30 s comporta uma frase e peça para escolher)
+   - fala literal do personagem (uma frase; se vier longa, avise em uma linha que 15 s comporta uma frase curta e peça para escolher)
    - ações extras (0 a 3)
    A fala é EXATAMENTE o que Murillo ditou, sem acrescentar palavras. Endereços de site (ex.: poupatempo.gov.br) NÃO entram na fala: vão para o cartão final como texto. Na fala fica só o nome do app.
    NÃO peça confirmação. Repita a leitura em UMA linha ("Itália · pizzaria · fala: '…' · ações: dança, cachorro. Gerando.") e dispare o cenário no mesmo turno. Só pare para perguntar se faltar o lugar ou a fala.
@@ -46,7 +46,7 @@ Fluxo por voz. Murillo fala, a plateia escolhe, você gera. Ele está no palco: 
 
 4. **Esperar**: `jobs_wait` com o job do vídeo, repetindo a cada `poll_after_seconds`. Entre esperas, não fale nada a menos que Murillo pergunte. Quando terminar, mostre o vídeo com `show_generation_by_ids` e diga: "Comercial pronto."
 
-5. **Erros são parte do show.** Se algo falhar, diga em uma frase o que falhou e em qual etapa (cenário ou vídeo), mostre o prompt usado se ele pedir, e ofereça gerar de novo. Nunca troque o modelo por conta própria. Se o Seedance rejeitar 30 s ou 720p, diga o erro literal e pergunte se gera com o valor aceito.
+5. **Erros são parte do show.** Se algo falhar, diga em uma frase o que falhou e em qual etapa (cenário ou vídeo), mostre o prompt usado se ele pedir, e ofereça gerar de novo. Nunca troque o modelo por conta própria. Se o Seedance rejeitar 15 s ou 720p, diga o erro literal e pergunte se gera com o valor aceito.
 
 ## Regras
 
