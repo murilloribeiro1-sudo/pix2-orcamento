@@ -1,14 +1,11 @@
-# Referências do personagem (Piá do Paraná)
+# Referências do personagem (Piá do Paraná) — app de selfie
 
-Coloque aqui os PNGs. Os nomes são fixos (o backend procura exatamente estes):
+Coloque aqui 2 PNGs com estes nomes exatos:
 
-| Arquivo | Uso | O que deve conter |
-|---|---|---|
-| `pia-personagem.png` | Vídeo (Seedance 2.5) | Character sheet: corpo inteiro, frente + 3/4, fundo neutro, roupa com "PARANÁ" no peito. Se tiver mais de uma vista, pode juntar numa imagem só. |
-| `pia-rosto.png` | Selfie (Nano Banana) | Close do rosto do Piá mostrando o traço 3D (olhos, pele, cabelo). É a referência de ESTILO, não de identidade. |
-| `pia-roupa.png` | Selfie (Nano Banana) | A camiseta/roupa vista de frente, nítida, com o "PARANÁ" legível. |
+| Arquivo | O que deve conter |
+|---|---|
+| `pia-rosto.png` | Close do rosto do Piá mostrando o traço 3D (olhos, pele, cabelo). Referência de ESTILO, não de identidade. |
+| `pia-roupa.png` | A camiseta/roupa vista de frente, nítida, com o "PARANÁ" legível. |
 
-Regras práticas:
-- PNG ou JPG, entre 1024 e 2048 px no lado maior, fundo limpo.
-- Sem texto solto, sem marca d'água, sem várias poses misturadas com legendas (o modelo copia o que vê).
-- Para o vídeo, é possível usar mais de uma imagem do personagem: defina `REF_CHARACTER_URLS` (URLs separadas por vírgula) nas variáveis da Vercel.
+PNG ou JPG, 1024 a 2048 px no lado maior, fundo limpo, sem texto solto e sem marca d'água.
+As referências do vídeo (character sheet) não ficam aqui: ficam no Higgsfield, ver `.claude/skills/comercial-ao-vivo/SKILL.md` na raiz do repositório.

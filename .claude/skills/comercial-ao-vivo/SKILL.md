@@ -1,0 +1,51 @@
+---
+name: comercial-ao-vivo
+description: Gera um comercial animado de 30 s ao vivo na palestra, a partir de comandos falados pelo Murillo (lugar, serviço, fala do personagem, ações). Usa as ferramentas do Higgsfield conectadas na sessão - Nano Banana Pro só para a imagem do LUGAR e Seedance 2.5 para o vídeo, com o personagem Piá do Paraná como referência. Ativa quando Murillo disser "vamos criar um comercial", "comercial ao vivo", "a plateia escolheu", "fala pra mim um lugar", ou pedir para gerar o comercial do Piá.
+---
+
+# Comercial ao vivo (palestra)
+
+Fluxo por voz. Murillo fala, a plateia escolhe, você gera. Ele está no palco: respostas curtas, sem perguntas em cadeia, sem explicar ferramenta.
+
+## Configuração fixa (preencher uma vez antes do evento)
+
+- `PERSONAGEM`: referência do Piá do Paraná no Higgsfield. Use o **Element** do personagem: coloque `<<<ELEMENT_ID>>>` no prompt do vídeo, ou passe a `media_id` do character sheet em `medias` com `role: image_references`. Confirmar com Murillo qual elemento é o Piá (`show_reference_elements action=list`; existe um chamado "Piu do Porto", pode ser ele). Anote aqui quando confirmado: `ELEMENT_ID = ____`.
+- Modelos travados: cenário `nano_banana_pro` (imagem), vídeo `seedance_2_5`, modo `omni_reference`, 30 s, 16:9, 720p, `generate_audio: true`.
+- Assinatura final padrão: "Paraná. Vem viver isso." (Murillo pode trocar).
+
+## Roteiro
+
+1. **Coletar** (Murillo dita, você anota e não gera nada ainda):
+   - lugar
+   - serviço/produto anunciado
+   - fala literal do personagem (uma frase; se vier longa, avise em uma linha que 30 s comporta uma frase e peça para escolher)
+   - ações extras (0 a 3)
+   Confirme em UMA linha: "Itália · pizzaria · fala: '…' · ações: dança, cachorro. Gero o cenário?"
+
+2. **Cenário** (Nano Banana Pro, só o lugar, sem personagem, sem cena):
+   `generate_image` com `model: nano_banana_pro`, `aspect_ratio: 16:9`, `count: 1`, prompt:
+   > Wide establishing shot of {LUGAR}, the most iconic and instantly recognizable landmark or landscape of this place. Stylized 3D animated look in the style of a Pixar feature film: soft global illumination, warm golden-hour light, rich saturated colors, clean detailed environment, depth of field. The setting subtly suggests the theme: {SERVIÇO}. No people, no characters, no text, no logos, no watermark. Cinematic 16:9 composition, empty foreground space where a character could stand.
+   Guarde o `job_id`. Diga só: "Cenário pronto. Gerando o comercial, leva uns minutos, pode seguir."
+
+3. **Comercial** (Seedance 2.5): `generate_video` com `model: seedance_2_5`, `mode: omni_reference`, `duration: 30`, `aspect_ratio: 16:9`, `resolution: 720p`, `generate_audio: true`, `medias`: `[ {value: <job_id do cenário>, role: image_references} ]` mais o personagem (Element no prompt ou media_id com `role: image_references`). Prompt (adapte só os campos entre chaves):
+   > 30-second animated TV commercial, 3D Pixar-style animation, 3 to 4 shots.
+   > MAIN CHARACTER: {PERSONAGEM} is "Piá do Paraná". Keep his exact identity, face, hairstyle, proportions and outfit (shirt with "PARANÁ" on the chest) in every shot.
+   > LOCATION: the reference image is {LUGAR}. Every shot happens there; keep its landmarks and lighting.
+   > WHAT IS BEING ADVERTISED: {SERVIÇO}. TONE: {TOM, padrão comédia leve}.
+   > SHOT 1 (0-7s): wide shot of {LUGAR}; Piá enters, excited, looks at camera.
+   > SHOT 2 (7-19s): medium shot. Piá presents {SERVIÇO} with expressive gestures and speaks in Brazilian Portuguese, clearly lip-synced, friendly voice: "{FALA}"
+   > SHOT 3 (19-27s): {AÇÕES, ou "quick fun montage of Piá enjoying {SERVIÇO}"}. Still in {LUGAR}.
+   > FINAL SHOT (27-30s): Piá gives a thumbs up; clean end card with the text "{ASSINATURA}".
+   > AUDIO: native audio, upbeat music, ambient sound of the location, dialogue in Brazilian Portuguese. No narrator. Consistent character in all shots, no extra text, no watermark.
+
+4. **Esperar**: `jobs_wait` com o job do vídeo, repetindo a cada `poll_after_seconds`. Entre esperas, não fale nada a menos que Murillo pergunte. Quando terminar, mostre o vídeo com `show_generation_by_ids` e diga: "Comercial pronto."
+
+5. **Erros são parte do show.** Se algo falhar, diga em uma frase o que falhou e em qual etapa (cenário ou vídeo), mostre o prompt usado se ele pedir, e ofereça gerar de novo. Nunca troque o modelo por conta própria. Se o Seedance rejeitar 30 s ou 720p, diga o erro literal e pergunte se gera com o valor aceito.
+
+## Regras
+
+- Nano Banana só faz o lugar. Nunca gere a cena, o personagem ou o frame do vídeo com ele.
+- Uma geração por etapa. Não gere variantes sem Murillo pedir.
+- `get_cost: true` antes do vídeo só se Murillo pedir o custo.
+- Não use `use_unlim` a menos que ele diga "usa o ilimitado".
+- Tempo real esperado: cenário 30 s a 1 min, vídeo 3 a 8 min. Avise isso uma vez, no início.

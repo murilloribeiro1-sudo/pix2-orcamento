@@ -32,7 +32,7 @@ http.createServer(async (req, res) => {
   const fn = handlers[url.pathname];
   if (fn) { try { await fn(req, res); } catch (e) { res.statusCode = 500; res.end(JSON.stringify({ error: e.message })); } return; }
 
-  let p = url.pathname === '/' ? '/show' : url.pathname;
+  let p = url.pathname === '/' ? '/qr' : url.pathname;
   let file = path.join(root, p);
   if (!path.extname(file) && fs.existsSync(file + '.html')) file += '.html';
   if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.statusCode = 404; res.end('não encontrado'); return; }
@@ -41,8 +41,8 @@ http.createServer(async (req, res) => {
 }).listen(PORT, '0.0.0.0', () => {
   const ips = Object.values(os.networkInterfaces()).flat().filter(i => i && i.family === 'IPv4' && !i.internal).map(i => i.address);
   if (!process.env.PUBLIC_URL && ips[0]) process.env.PUBLIC_URL = `http://${ips[0]}:${PORT}`;
-  console.log(`\nPIX2 Evento rodando.\n  Apresentador:  http://localhost:${PORT}/show\n  QR para telão: http://localhost:${PORT}/qr?c=${process.env.EVENT_CODE || 'CODIGO'}`);
+  console.log(`\nPIX2 Evento rodando.\n  QR para telão: http://localhost:${PORT}/qr?c=${process.env.EVENT_CODE || 'CODIGO'}`);
   for (const ip of ips) console.log(`  Celulares (mesma rede Wi-Fi): http://${ip}:${PORT}/pia?c=${process.env.EVENT_CODE || 'CODIGO'}`);
-  console.log(`\n  FAL_KEY: ${process.env.FAL_KEY ? 'ok' : 'FALTANDO'} · ADMIN_PASS: ${process.env.ADMIN_PASS ? 'ok' : 'FALTANDO'} · EVENT_CODE: ${process.env.EVENT_CODE || 'FALTANDO'}`);
-  console.log(`  Referências em refs/: ${['pia-personagem.png','pia-rosto.png','pia-roupa.png'].map(f => f + (fs.existsSync(path.join(root,'refs',f)) ? ' ok' : ' FALTANDO')).join(' · ')}\n`);
+  console.log(`\n  GEMINI_API_KEY: ${process.env.GEMINI_API_KEY ? 'ok' : 'FALTANDO'} · EVENT_CODE: ${process.env.EVENT_CODE || 'FALTANDO'}`);
+  console.log(`  Referências em refs/: ${['pia-rosto.png','pia-roupa.png'].map(f => f + (fs.existsSync(path.join(root,'refs',f)) ? ' ok' : ' FALTANDO')).join(' · ')}\n`);
 });
