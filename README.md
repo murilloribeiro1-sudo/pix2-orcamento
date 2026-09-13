@@ -19,3 +19,7 @@ Sistema web de geração de propostas comerciais para PIX2 Produção de Conteú
 ## Como usar
 
 Acesse a URL do deploy e preencha os campos. O sistema calcula automaticamente e gera o PDF no browser.
+
+## Evento (comercial ao vivo + selfie Piá do Paraná)
+
+Ferramentas em `/show`, `/pia` e `/qr`, com backend em `api/` (fal.ai). Guia completo em [EVENTO.md](EVENTO.md).
