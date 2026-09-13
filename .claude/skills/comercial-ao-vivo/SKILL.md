@@ -9,7 +9,7 @@ Fluxo por voz. Murillo fala, a plateia escolhe, você gera. Ele está no palco: 
 
 ## Configuração fixa (preencher uma vez antes do evento)
 
-- `PERSONAGEM`: referência do Piá do Paraná no Higgsfield. Use o **Element** do personagem: coloque `<<<ELEMENT_ID>>>` no prompt do vídeo, ou passe a `media_id` do character sheet em `medias` com `role: image_references`. Confirmar com Murillo qual elemento é o Piá (`show_reference_elements action=list`; existe um chamado "Piu do Porto", pode ser ele). Anote aqui quando confirmado: `ELEMENT_ID = ____`.
+- `PERSONAGEM`: referência do Piá do Paraná no Higgsfield. Use o **Element** do personagem: coloque `<<<ELEMENT_ID>>>` no prompt do vídeo, ou passe a `media_id` do character sheet em `medias` com `role: image_references`. O character sheet oficial (PRODUÇÃO BOLD / PIX2 / tif) está em `evento/refs/pia-personagem.png` e no Higgsfield como Element **Pia-do-Parana** (media_id `a1413f08-2918-44c4-b780-ae5b142dea6d`). Use `<<<fa2d1dc6-e7ae-48f4-9f65-b1899d6da04b>>>` no prompt do vídeo (o backend injeta a imagem), ou a media_id com `role: image_references`.
 - Modelos travados: cenário `nano_banana_pro` (imagem), vídeo `seedance_2_5`, modo `omni_reference`, 30 s, 16:9, 720p, `generate_audio: true`.
 - Assinatura final padrão: "Paraná. Vem viver isso." (Murillo pode trocar).
 
@@ -29,7 +29,7 @@ Fluxo por voz. Murillo fala, a plateia escolhe, você gera. Ele está no palco: 
 
 3. **Comercial** (Seedance 2.5): `generate_video` com `model: seedance_2_5`, `mode: omni_reference`, `duration: 30`, `aspect_ratio: 16:9`, `resolution: 720p`, `generate_audio: true`, `medias`: `[ {value: <job_id do cenário>, role: image_references} ]` mais o personagem (Element no prompt ou media_id com `role: image_references`). Prompt (adapte só os campos entre chaves):
    > 30-second animated TV commercial, 3D Pixar-style animation, 3 to 4 shots.
-   > MAIN CHARACTER: {PERSONAGEM} is "Piá do Paraná". Keep his exact identity, face, hairstyle, proportions and outfit (shirt with "PARANÁ" on the chest) in every shot.
+   > MAIN CHARACTER: <<<fa2d1dc6-e7ae-48f4-9f65-b1899d6da04b>>> is "Piá do Paraná". Keep his exact identity, face, hairstyle, proportions and outfit (black t-shirt with the exact printed logos from the reference) in every shot.
    > LOCATION: the reference image is {LUGAR}. Every shot happens there; keep its landmarks and lighting.
    > WHAT IS BEING ADVERTISED: {SERVIÇO}. TONE: {TOM, padrão comédia leve}.
    > SHOT 1 (0-7s): wide shot of {LUGAR}; Piá enters, excited, looks at camera.

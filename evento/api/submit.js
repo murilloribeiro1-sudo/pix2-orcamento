@@ -38,7 +38,7 @@ function selfiePrompt() {
   return [
     `Transform the person in the first image into a 3D animated character in the exact same art style as the character in the second image (Pixar-like stylized 3D, big expressive eyes, soft rounded shapes, smooth skin shading, clean studio lighting).`,
     `Preserve the person's real identity from the first image: face shape, skin tone, hair style and color, eye color, facial hair, glasses if present, and their expression. The result must be clearly recognizable as this person.`,
-    `Dress the character in the exact outfit shown in the third image: same shirt design, colors and the word "PARANÁ" written on the chest, exactly as in the reference.`,
+    `Dress the character in the exact outfit shown in the third image: same black t-shirt, same fit, and reproduce the printed logos and text on the chest exactly as they appear in the reference, legible and unchanged.`,
     `Portrait framing from the chest up, 3:4, character centered, friendly smile, plain soft gradient background matching the reference style. No text other than what is on the shirt, no watermark.`,
   ].join(' ');
 }
