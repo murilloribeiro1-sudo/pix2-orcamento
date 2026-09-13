@@ -2,7 +2,27 @@
 
 Sistema independente do orçamento. Vive na pasta `evento/` só por enquanto; não compartilha nada com o `index.html` da raiz.
 
-## 0. Deploy como projeto separado
+## 0. Rodar no seu computador (antes de subir para a rede)
+
+Precisa só do Node.js (nodejs.org, versão 18 ou mais nova). Sem instalar mais nada.
+
+1. Baixe este repositório (GitHub → botão **Code** → **Download ZIP**) e descompacte.
+2. Dentro da pasta `evento`, copie o arquivo `.env.example` para `.env` e preencha:
+   - `GEMINI_API_KEY`: chave do Google AI Studio (aistudio.google.com/apikey). É o Nano Banana. Faz as imagens.
+   - `FAL_KEY`: chave da fal.ai. Faz o vídeo (Seedance 2.5). Sem ela, o `/show` gera o cenário mas não o comercial.
+   - `ADMIN_PASS` e `EVENT_CODE`: você inventa.
+3. Coloque as 3 imagens do Piá em `refs/` (nomes em `refs/README.md`).
+4. Abra o terminal na pasta `evento` e rode:
+
+```bash
+node server.js
+```
+
+5. Abra `http://localhost:3000/show` no navegador. Os celulares na mesma rede Wi-Fi usam o endereço que aparece no terminal.
+
+A geração continua acontecendo na nuvem (Google e fal.ai); local é só a página e o servidor. As imagens de referência são embutidas no envio, porque a fal.ai não enxerga a sua rede interna.
+
+## 0b. Deploy como projeto separado
 
 **Opção A (hoje, sem criar repo):** na Vercel, *Add New Project* → importar este repositório → em **Root Directory** escolher `evento` → deploy. Vira um projeto e um domínio próprios (ex.: `pix2-evento.vercel.app`).
 
@@ -27,12 +47,13 @@ Backend: funções serverless em `api/` que falam com a **fal.ai** (fila assínc
 
 ## 1. Configurar (uma vez)
 
-1. Criar chave em fal.ai (Dashboard → Keys) e colocar crédito.
+1. Criar chave no Google AI Studio (imagens) e em fal.ai (vídeo, Dashboard → Keys, colocar crédito).
 2. Na Vercel → Project → Settings → Environment Variables:
 
 | Variável | Valor |
 |---|---|
-| `FAL_KEY` | chave da fal.ai |
+| `GEMINI_API_KEY` | chave do Google AI Studio (Nano Banana, imagens) |
+| `FAL_KEY` | chave da fal.ai (Seedance 2.5, vídeo; também imagens se não houver chave Gemini) |
 | `ADMIN_PASS` | senha do `/show` |
 | `EVENT_CODE` | código que vai no QR (ex.: `parana2026`) |
 | `PUBLIC_URL` | URL do deploy (ex.: `https://pix2-orcamento.vercel.app`) |

@@ -15,16 +15,34 @@ export function publicUrl(req) {
 }
 
 // Referências do personagem. Podem vir de env (URLs absolutas) ou dos arquivos em /refs.
+// Rodando local (URL não pública), as imagens são embutidas como data URI, porque a fal.ai
+// não consegue baixar de http://192.168.x.x.
 export function characterRefs(req) {
   const base = publicUrl(req);
   const split = (v) => (v || '').split(',').map((s) => s.trim()).filter(Boolean);
   const character = split(process.env.REF_CHARACTER_URLS);
+  const local = !/^https:\/\//.test(base) || /localhost|127\.0\.0\.1/.test(base);
+  const ref = (file) => (local ? inlineRef(file) : `${base}/refs/${file}`);
   return {
-    character: character.length ? character : [`${base}/refs/pia-personagem.png`],
-    face: process.env.REF_FACE_URL || `${base}/refs/pia-rosto.png`,
-    outfit: process.env.REF_OUTFIT_URL || `${base}/refs/pia-roupa.png`,
+    character: character.length ? character : [ref('pia-personagem.png')],
+    face: process.env.REF_FACE_URL || ref('pia-rosto.png'),
+    outfit: process.env.REF_OUTFIT_URL || ref('pia-roupa.png'),
   };
 }
+
+function inlineRef(file) {
+  try {
+    const fs = require_fs();
+    const p = new URL(`../refs/${file}`, import.meta.url);
+    const buf = fs.readFileSync(p);
+    const mime = file.endsWith('.jpg') || file.endsWith('.jpeg') ? 'image/jpeg' : 'image/png';
+    return `data:${mime};base64,${buf.toString('base64')}`;
+  } catch {
+    return `missing:${file}`;
+  }
+}
+import fs from 'node:fs';
+function require_fs() { return fs; }
 
 export function json(res, status, body) {
   res.statusCode = status;
