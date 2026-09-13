@@ -48,6 +48,10 @@ Fluxo por voz. Murillo fala, a plateia escolhe, você gera. Ele está no palco: 
 
 ## Regras
 
+- Se `generate_video` devolver `preset_recommendation`, NÃO pergunte: repita a chamada igual com `declined_preset_id` do preset sugerido. Sempre literal.
+- Referências no vídeo: `medias` = character sheet (`a1413f08-2918-44c4-b780-ae5b142dea6d`, role `image_references`) + job_id do cenário (role `image_references`), e o `<<<fa2d1dc6-e7ae-48f4-9f65-b1899d6da04b>>>` no prompt.
+- Prompt do cenário: cite um marco reconhecível do lugar (Itália → Coliseu/piazza em Roma) e inclua o objeto da ação (pizza na mesa) para o vídeo ter onde apoiar a cena.
+
 - Nano Banana só faz o lugar. Nunca gere a cena, o personagem ou o frame do vídeo com ele.
 - Uma geração por etapa. Não gere variantes sem Murillo pedir.
 - `get_cost: true` antes do vídeo só se Murillo pedir o custo.
