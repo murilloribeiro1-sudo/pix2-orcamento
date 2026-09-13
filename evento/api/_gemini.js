@@ -2,8 +2,7 @@
 const BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 export const GEMINI_MODELS = {
-  location: process.env.GEMINI_IMAGE_MODEL_LOCATION || process.env.GEMINI_IMAGE_MODEL || 'gemini-2.5-flash-image',
-  selfie: process.env.GEMINI_IMAGE_MODEL_SELFIE || process.env.GEMINI_IMAGE_MODEL || 'gemini-2.5-flash-image',
+  selfie: process.env.GEMINI_IMAGE_MODEL || 'gemini-3-pro-image-preview',
 };
 
 export function geminiEnabled() { return Boolean(process.env.GEMINI_API_KEY); }
