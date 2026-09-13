@@ -1,0 +1,6 @@
+{
+  "name": "pix2-evento",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=18" }
+}

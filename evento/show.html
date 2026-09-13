@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PIX2 · Comercial ao vivo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0e0f12;--panel:#17181d;--line:#2a2c34;--txt:#f2f2f2;--mut:#9a9da8;--acc:#e8ff47;--err:#ff6b6b;--ok:#5be39a}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.5 "DM Mono",monospace;padding:20px}
+  h1,h2{font-family:Syne,sans-serif;margin:0 0 8px}
+  h1{font-size:22px;letter-spacing:-.5px}
+  h2{font-size:14px;color:var(--acc);text-transform:uppercase;letter-spacing:1px}
+  .grid{display:grid;grid-template-columns:minmax(320px,440px) 1fr;gap:20px;align-items:start}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+  label{display:block;font-size:12px;color:var(--mut);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.5px}
+  input,textarea,select{width:100%;background:#0b0c0f;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:10px 12px;font:inherit}
+  textarea{min-height:90px;resize:vertical}
+  input:focus,textarea:focus{outline:none;border-color:var(--acc)}
+  button{font:inherit;font-family:Syne,sans-serif;font-weight:700;border:0;border-radius:8px;padding:12px 16px;cursor:pointer;background:var(--acc);color:#111;margin-top:12px}
+  button.sec{background:#2a2c34;color:var(--txt)}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>*{flex:1}
+  .stage{font-family:Syne,sans-serif;font-size:36px;font-weight:800;line-height:1.1;margin:6px 0 14px}
+  .stage small{display:block;font:12px "DM Mono",monospace;color:var(--mut);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+  .pill{display:inline-block;padding:3px 10px;border-radius:99px;background:#24262e;color:var(--mut);font-size:12px;margin:2px 4px 2px 0}
+  .pill.ok{color:var(--ok)}.pill.bad{color:var(--err)}
+  img.loc,video{width:100%;border-radius:10px;border:1px solid var(--line);background:#000}
+  .thumbs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .thumbs img{cursor:pointer;opacity:.7}.thumbs img.sel{opacity:1;outline:3px solid var(--acc)}
+  #log{background:#0b0c0f;border:1px solid var(--line);border-radius:8px;padding:10px 12px;height:260px;overflow:auto;font-size:12px;white-space:pre-wrap}
+  .l-err{color:var(--err)}.l-ok{color:var(--ok)}.l-mut{color:var(--mut)}
+  .timer{font-family:Syne,sans-serif;font-size:40px;font-weight:800;color:var(--acc)}
+  .hidden{display:none!important}
+  .big{font-size:18px;padding:16px}
+  .lista li{margin:4px 0}
+</style>
+</head>
+<body>
+<h1>PIX2 · Comercial criado ao vivo</h1>
+<p class="l-mut" style="margin-top:0">Plateia dá os comandos → Nano Banana cria só o cenário → Seedance 2.5 gera o comercial de 30s a partir do prompt + referências do personagem.</p>
+
+<div id="login" class="card" style="max-width:440px">
+  <h2>Acesso do apresentador</h2>
+  <label>Senha</label>
+  <input id="pass" type="password" autocomplete="current-password">
+  <button id="btnLogin">Entrar</button>
+  <p id="loginMsg" class="l-err"></p>
+</div>
+
+<div id="app" class="grid hidden">
+  <div>
+    <div class="card">
+      <h2>1 · Comandos da plateia</h2>
+      <label>Local (ex.: Itália, Foz do Iguaçu, Tóquio)</label>
+      <input id="local" placeholder="Fala pra mim um lugar…">
+      <label>Serviço / produto anunciado</label>
+      <input id="servico" placeholder="Fala pra mim um serviço…">
+      <label>O que o personagem fala (fala literal, em português)</label>
+      <textarea id="fala" placeholder="Ex.: Vem pra cá que a pizza é boa e o Wi-Fi é melhor ainda!"></textarea>
+      <label>Ações / pedidos extras (um por linha)</label>
+      <textarea id="acoes" placeholder="Ex.: ele dança&#10;aparece um cachorro&#10;termina com um selfie"></textarea>
+      <label>Tom</label>
+      <select id="tom">
+        <option value="comedy">Comédia leve</option>
+        <option value="epic">Épico / grandioso</option>
+        <option value="cozy">Aconchegante / emocional</option>
+        <option value="fast">Rápido e energético</option>
+      </select>
+      <label>Assinatura final (texto que aparece no fim)</label>
+      <input id="tagline" value="Paraná. Vem viver isso.">
+    </div>
+
+    <div class="card">
+      <h2>2 · Cenário (Nano Banana)</h2>
+      <p class="l-mut" style="margin:0 0 6px">Só o lugar. Sem personagem, sem cena. Isso vira a referência de local para o vídeo.</p>
+      <label>Prompt do cenário (edite se quiser)</label>
+      <textarea id="locPrompt" style="min-height:70px"></textarea>
+      <div class="row">
+        <button id="btnLoc">Gerar cenário</button>
+        <button id="btnLoc2" class="sec">Gerar 2 opções</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>3 · Comercial (Seedance 2.5)</h2>
+      <label>Prompt do vídeo (montado automaticamente; edite antes de gerar)</label>
+      <textarea id="vidPrompt" style="min-height:220px"></textarea>
+      <div class="row">
+        <div><label>Duração</label><select id="dur"><option>30</option><option>20</option><option>15</option><option>10</option></select></div>
+        <div><label>Resolução</label><select id="res"><option>720p</option><option>1080p</option><option>480p</option></select></div>
+        <div><label>Formato</label><select id="ar"><option>16:9</option><option>9:16</option></select></div>
+      </div>
+      <button id="btnVid" class="big" disabled>Gerar comercial</button>
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <div class="stage"><small>Status</small><span id="stageTxt">Aguardando comandos</span></div>
+      <div class="timer" id="timer">00:00</div>
+      <div id="pills"></div>
+    </div>
+
+    <div class="card">
+      <h2>Cenário gerado</h2>
+      <div id="locBox"><p class="l-mut">Nada ainda.</p></div>
+    </div>
+
+    <div class="card">
+      <h2>Comercial</h2>
+      <div id="vidBox"><p class="l-mut">Nada ainda.</p></div>
+      <div class="row">
+        <a id="dl" class="hidden" download="comercial-pix2.mp4"><button class="sec">Baixar MP4</button></a>
+        <button id="btnFull" class="sec hidden">Tela cheia</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Log de processo (mostre isso na palestra)</h2>
+      <div id="log"></div>
+      <button id="btnClear" class="sec">Limpar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const state = { admin: sessionStorage.getItem('pix2_admin') || '', cfg: null, locationUrl: '', t0: 0, tick: null };
+
+function log(msg, cls='') {
+  const t = new Date().toLocaleTimeString('pt-BR');
+  const el = document.createElement('div');
+  el.className = cls; el.textContent = `[${t}] ${msg}`;
+  $('log').appendChild(el); $('log').scrollTop = $('log').scrollHeight;
+}
+function stage(txt){ $('stageTxt').textContent = txt; }
+function startTimer(){ state.t0 = Date.now(); clearInterval(state.tick); state.tick = setInterval(()=>{const s=Math.floor((Date.now()-state.t0)/1000);$('timer').textContent=`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;},500); }
+function stopTimer(){ clearInterval(state.tick); }
+
+async function api(path, body) {
+  const r = await fetch(path, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ ...body, admin: state.admin }) });
+  const data = await r.json().catch(()=>({error:'resposta inválida'}));
+  if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
+  return data;
+}
+async function poll(job, onTick) {
+  const qs = new URLSearchParams({ status_url: job.status_url, response_url: job.response_url, admin: state.admin });
+  for (;;) {
+    const r = await fetch('/api/result?' + qs.toString());
+    const d = await r.json().catch(()=>({error:'resposta inválida'}));
+    if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+    if (d.status === 'COMPLETED') return d.output;
+    if (d.status === 'FAILED') throw new Error(d.error + (d.detail ? ' ' + JSON.stringify(d.detail).slice(0,400) : ''));
+    onTick && onTick(d);
+    await new Promise(res => setTimeout(res, 3000));
+  }
+}
+
+// ---------- login ----------
+async function login(pass) {
+  state.admin = pass;
+  try {
+    state.cfg = await api('/api/config', {});
+    sessionStorage.setItem('pix2_admin', pass);
+    $('login').classList.add('hidden'); $('app').classList.remove('hidden');
+    const c = state.cfg;
+    $('pills').innerHTML =
+      `<span class="pill ${c.fal_key_set?'ok':'bad'}">FAL_KEY ${c.fal_key_set?'ok':'AUSENTE'}</span>` +
+      `<span class="pill ${c.refs_ok.character0?'ok':'bad'}">ref personagem ${c.refs_ok.character0?'ok':'faltando'}</span>` +
+      `<span class="pill ${c.refs_ok.face?'ok':'bad'}">ref rosto ${c.refs_ok.face?'ok':'faltando'}</span>` +
+      `<span class="pill ${c.refs_ok.outfit?'ok':'bad'}">ref roupa ${c.refs_ok.outfit?'ok':'faltando'}</span>` +
+      `<span class="pill">${c.models.location}</span><span class="pill">${c.models.video}</span>`;
+    log(`Conectado. Modelos: cenário=${c.models.location} · vídeo=${c.models.video}`, 'l-ok');
+    if (!c.refs_ok.character0) log('Referência do personagem não encontrada em /refs/pia-personagem.png. O vídeo vai sair sem o Piá.', 'l-err');
+  } catch (e) { $('loginMsg').textContent = e.message; state.admin=''; }
+}
+$('btnLogin').onclick = () => login($('pass').value);
+$('pass').addEventListener('keydown', e => { if (e.key==='Enter') login($('pass').value); });
+if (state.admin) login(state.admin);
+
+// ---------- prompts ----------
+function locPromptFromInputs() {
+  const local = $('local').value.trim(); const servico = $('servico').value.trim();
+  if (!local) return '';
+  return `Wide establishing shot of ${local}, the most iconic and instantly recognizable landmark or landscape of this place. Stylized 3D animated look in the style of a Pixar feature film: soft global illumination, warm golden-hour light, rich saturated colors, clean detailed environment, depth of field.${servico ? ` The setting subtly suggests the theme: ${servico}.` : ''} No people, no characters, no text, no logos, no watermark. Cinematic 16:9 composition, empty foreground space where a character could stand.`;
+}
+const TONS = {
+  comedy: 'light comedy, playful timing, a visual gag',
+  epic: 'epic and grand, sweeping drone-style camera moves, big orchestral feel',
+  cozy: 'warm, cozy and emotional, gentle pacing, soft music',
+  fast: 'fast-paced, energetic cuts, upbeat music, punchy delivery',
+};
+function vidPromptFromInputs() {
+  const nChar = (state.cfg?.refs?.character?.length) || 1;
+  const charRefs = Array.from({length:nChar},(_,i)=>`[Image${i+1}]`).join(', ');
+  const locRef = `[Image${nChar+1}]`;
+  const local = $('local').value.trim() || 'the location';
+  const servico = $('servico').value.trim() || 'the service';
+  const fala = $('fala').value.trim();
+  const acoes = $('acoes').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const tom = TONS[$('tom').value];
+  const tag = $('tagline').value.trim();
+  const dur = Number($('dur').value);
+  return [
+`30-second animated TV commercial, 3D Pixar-style animation, single continuous piece with 3 to 4 shots.`,
+`MAIN CHARACTER: ${charRefs} is "Piá do Paraná". Keep his exact identity, face, hairstyle, proportions and outfit (shirt with "PARANÁ" written on the chest) in every shot. Do not change his design.`,
+`LOCATION: ${locRef} is ${local}. Every shot happens in this place; keep its landmarks, colors and lighting consistent with the reference.`,
+`WHAT IS BEING ADVERTISED: ${servico}.`,
+`TONE: ${tom}.`,
+`SHOT 1 (0-${Math.round(dur*0.25)}s): wide establishing shot of ${local}; Piá enters frame, excited, and looks at the camera.`,
+`SHOT 2 (${Math.round(dur*0.25)}-${Math.round(dur*0.65)}s): medium shot. Piá presents ${servico} with expressive gestures. He speaks in Brazilian Portuguese, clearly lip-synced, with a friendly voice: "${fala || 'Vem pro Paraná!'}"`,
+acoes.length ? `SHOT 3 (${Math.round(dur*0.65)}-${Math.round(dur*0.9)}s): ${acoes.join('; ')}. Keep it in ${local}.` : `SHOT 3 (${Math.round(dur*0.65)}-${Math.round(dur*0.9)}s): quick fun montage of Piá enjoying ${servico} in ${local}.`,
+`FINAL SHOT (${Math.round(dur*0.9)}-${dur}s): Piá gives a thumbs up to the camera; clean end card with the text "${tag}" in bold sans-serif letters.`,
+`AUDIO: native audio, upbeat background music matching the tone, ambient sound of the location, the character's dialogue in Brazilian Portuguese. No narrator other than the character.`,
+`Cinematic camera, smooth motion, consistent character across all shots, no extra text except the end card, no watermark.`,
+  ].join('\n');
+}
+['local','servico','fala','acoes','tom','tagline','dur'].forEach(id => $(id).addEventListener('input', () => { $('locPrompt').value = locPromptFromInputs(); $('vidPrompt').value = vidPromptFromInputs(); }));
+
+// ---------- cenário ----------
+async function genLocation(n) {
+  const local = $('local').value.trim();
+  if (!local) return log('Informe o local antes.', 'l-err');
+  $('btnLoc').disabled = $('btnLoc2').disabled = true; $('btnVid').disabled = true;
+  stage(`Criando cenário: ${local}`); startTimer();
+  try {
+    const prompt = $('locPrompt').value.trim() || locPromptFromInputs();
+    log(`Nano Banana → cenário "${local}" (${n} imagem${n>1?'ns':''})`);
+    log(`Prompt: ${prompt}`, 'l-mut');
+    const job = await api('/api/submit', { task:'location', local, assunto: $('servico').value, prompt, num_images: n });
+    log(`Job enviado: ${job.request_id}`);
+    const out = await poll(job, d => { if (d.queue_position!=null) stage(`Cenário na fila (posição ${d.queue_position})`); });
+    const imgs = (out.images || []).map(i => i.url);
+    if (!imgs.length) throw new Error('Nenhuma imagem retornada: ' + JSON.stringify(out).slice(0,300));
+    $('locBox').innerHTML = imgs.length === 1
+      ? `<img class="loc" src="${imgs[0]}">`
+      : `<div class="thumbs">${imgs.map((u,i)=>`<img class="${i?'':'sel'}" src="${u}" data-u="${u}">`).join('')}</div><p class="l-mut">Clique para escolher.</p>`;
+    state.locationUrl = imgs[0];
+    $('locBox').querySelectorAll('.thumbs img').forEach(im => im.onclick = () => { $('locBox').querySelectorAll('img').forEach(x=>x.classList.remove('sel')); im.classList.add('sel'); state.locationUrl = im.dataset.u; log('Cenário escolhido: ' + im.dataset.u, 'l-mut'); });
+    log(`Cenário pronto em ${$('timer').textContent}: ${imgs[0]}`, 'l-ok');
+    stage('Cenário pronto. Revise o prompt e gere o comercial.');
+    $('vidPrompt').value = vidPromptFromInputs();
+    $('btnVid').disabled = false;
+  } catch (e) { log('ERRO no cenário: ' + e.message, 'l-err'); stage('Erro no cenário — veja o log'); }
+  finally { stopTimer(); $('btnLoc').disabled = $('btnLoc2').disabled = false; }
+}
+$('btnLoc').onclick = () => genLocation(1);
+$('btnLoc2').onclick = () => genLocation(2);
+
+// ---------- vídeo ----------
+$('btnVid').onclick = async () => {
+  if (!state.locationUrl) return log('Gere o cenário primeiro.', 'l-err');
+  const prompt = $('vidPrompt').value.trim();
+  $('btnVid').disabled = true; stage('Gerando comercial (Seedance 2.5)…'); startTimer();
+  $('vidBox').innerHTML = '<p class="l-mut">Renderizando… normalmente 3 a 8 minutos para 30s.</p>';
+  try {
+    log(`Seedance 2.5 → ${$('dur').value}s · ${$('res').value} · ${$('ar').value}`);
+    log(`Prompt do vídeo:\n${prompt}`, 'l-mut');
+    const job = await api('/api/submit', { task:'video', prompt, location_url: state.locationUrl, duration: $('dur').value, resolution: $('res').value, aspect_ratio: $('ar').value });
+    log(`Job enviado: ${job.request_id}. Referências: ${job.image_urls.join(' | ')}`);
+    let lastLog = '';
+    const out = await poll(job, d => {
+      stage(d.status === 'IN_QUEUE' ? `Comercial na fila (posição ${d.queue_position ?? '?'})` : 'Comercial renderizando…');
+      const l = (d.logs||[]).slice(-1)[0]; if (l && l !== lastLog) { lastLog = l; log('fal: ' + l, 'l-mut'); }
+    });
+    const url = out.video?.url;
+    if (!url) throw new Error('Sem vídeo na resposta: ' + JSON.stringify(out).slice(0,300));
+    $('vidBox').innerHTML = `<video src="${url}" controls autoplay playsinline></video>`;
+    $('dl').href = url; $('dl').classList.remove('hidden'); $('btnFull').classList.remove('hidden');
+    log(`Comercial pronto em ${$('timer').textContent}: ${url}`, 'l-ok');
+    stage('Comercial pronto 🎬');
+  } catch (e) { log('ERRO no vídeo: ' + e.message, 'l-err'); stage('Erro no vídeo — veja o log'); $('vidBox').innerHTML = `<p class="l-err">${e.message}</p>`; }
+  finally { stopTimer(); $('btnVid').disabled = false; }
+};
+$('btnFull').onclick = () => { const v = $('vidBox').querySelector('video'); if (v) (v.requestFullscreen || v.webkitEnterFullscreen).call(v); };
+$('btnClear').onclick = () => { $('log').innerHTML = ''; };
+</script>
+</body>
+</html>

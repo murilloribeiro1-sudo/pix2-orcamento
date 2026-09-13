@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QR Code · Piá do Paraná</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@800&family=DM+Mono&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#fff;color:#111;font:16px "DM Mono",monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;box-sizing:border-box;text-align:center}
+  h1{font-family:Syne,sans-serif;font-size:clamp(28px,6vw,64px);margin:0 0 8px}
+  #qr{margin:24px auto}
+  #qr img,#qr canvas{width:min(70vw,520px);height:auto;image-rendering:pixelated}
+  .url{font-size:clamp(14px,2.5vw,26px);word-break:break-all}
+  form{margin-top:30px;font-size:13px;color:#777}
+  input{font:inherit;padding:6px 8px;width:260px}
+</style>
+</head>
+<body>
+<h1>Vire o Piá do Paraná</h1>
+<div>Aponte a câmera do celular</div>
+<div id="qr"></div>
+<div class="url" id="url"></div>
+<form onsubmit="return false">
+  código do evento: <input id="code" placeholder="ex.: parana2026"> <button id="go">gerar</button>
+  <div>(ou abra /qr?c=CODIGO)</div>
+</form>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+function render(code) {
+  const link = `${location.origin}/pia?c=${encodeURIComponent(code)}`;
+  $('qr').innerHTML = '';
+  new QRCode($('qr'), { text: link, width: 800, height: 800, correctLevel: QRCode.CorrectLevel.M });
+  $('url').textContent = link;
+  history.replaceState(null, '', `?c=${encodeURIComponent(code)}`);
+}
+const c = new URLSearchParams(location.search).get('c');
+if (c) { $('code').value = c; render(c); }
+$('go').onclick = () => { if ($('code').value.trim()) render($('code').value.trim()); };
+</script>
+</body>
+</html>
