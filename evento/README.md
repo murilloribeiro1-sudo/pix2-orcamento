@@ -1,6 +1,6 @@
 # PIX2 · Evento — Selfie "Piá do Paraná"
 
-App para o público do evento: escaneia o QR Code, tira uma selfie, e o Nano Banana Pro (Gemini) devolve a pessoa como personagem 3D com a camiseta do Paraná.
+App para o público do evento: escaneia o QR Code, tira uma selfie, e o Nano Banana Pro (Gemini) devolve a pessoa como personagem 3D com a camiseta preta oficial (PRODUÇÃO BOLD / PIX2 / tif).
 
 Projeto independente do orçamento. Vive na pasta `evento/` deste repositório.
 
