@@ -1,5 +1,20 @@
 # PIX2 · Evento — Comercial ao vivo + Selfie "Piá do Paraná"
 
+Sistema independente do orçamento. Vive na pasta `evento/` só por enquanto; não compartilha nada com o `index.html` da raiz.
+
+## 0. Deploy como projeto separado
+
+**Opção A (hoje, sem criar repo):** na Vercel, *Add New Project* → importar este repositório → em **Root Directory** escolher `evento` → deploy. Vira um projeto e um domínio próprios (ex.: `pix2-evento.vercel.app`).
+
+**Opção B (repositório próprio):** crie um repo vazio `pix2-evento` no GitHub e rode na raiz deste repositório:
+
+```bash
+git subtree split --prefix=evento -b evento-only
+git push git@github.com:murilloribeiro1-sudo/pix2-evento.git evento-only:main
+```
+
+Depois aponte o projeto da Vercel para o novo repo (Root Directory vazio).
+
 Duas ferramentas no mesmo deploy (Vercel):
 
 | URL | Quem usa | O que faz |
