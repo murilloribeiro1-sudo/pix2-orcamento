@@ -35,7 +35,7 @@ html,body{{height:100%}} body{{min-height:1123px;display:flex;flex-direction:col
 <div class="prop-tag-group">Spot de 30 segundos</div><div class="prop-tags">{tags(spot)}</div>
 <div class="prop-tag-group">Abrangência</div><div class="prop-tags">{tags(abr)}</div>
 </div>
-<div class="prop-total-card"><div class="prop-total-label">Investimento Total</div><div class="prop-total-valor">R$ 319.000,00</div></div>
+<div class="prop-total-card"><div class="prop-total-label">Investimento Total</div><div class="prop-total-valor">R$ 238.350,00</div></div>
 <div class="prop-assinatura"><div><div class="ass-label">Contratado</div><div class="ass-nome">Murillo Ribeiro</div>
 <div class="ass-sub">{EMP}<br>{CNPJ}</div>
 <div class="ass-linha-dupla"><div class="ass-linha-item">Assinatura</div><div class="ass-linha-item">Carimbo</div></div></div></div>
