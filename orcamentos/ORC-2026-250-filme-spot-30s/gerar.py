@@ -32,7 +32,7 @@ body{{background:#ffffff;color:#14161d}}
 html,body{{height:100%}} body{{min-height:1123px;display:flex;flex-direction:column}}
 </style></head><body>
 <div class="prop-header"><img src="{logo}" style="height:30px" alt="PIX2">
-<div class="prop-meta"><div class="orc-num">{ORC}</div><div>Direção · Murillo Ribeiro</div><div>{DATA}</div></div></div>
+<div class="prop-meta"><div class="orc-num">{ORC}</div><div>Direção · Murillo Ribeiro</div><div>Cliente · Secom Paraná</div><div>{DATA}</div></div></div>
 <div class="prop-grid">
 <div class="prop-grid-item"><div class="g-label">Projeto</div><div class="g-val">Filme 30" + Spot 30"</div></div>
 <div class="prop-grid-item"><div class="g-label">Captação</div><div class="g-val">A definir</div></div>
