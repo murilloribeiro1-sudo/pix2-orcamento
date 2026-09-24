@@ -16,6 +16,19 @@ html=f"""<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>{O
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap');
 @page{{size:A4;margin:0}}
 {css}
+
+/* tema claro */
+body{{background:#ffffff;color:#14161d}}
+.prop-header{{background:#f3f4f8;border-bottom:1px solid #dfe2ea}}
+.prop-header img{{filter:invert(1)}}
+.prop-meta{{color:#5c6280}} .orc-num{{color:#a8790a}}
+.prop-grid,.prop-grid-item,.prop-escopo,.prop-card,.prop-total-card,.prop-footer,.prop-card-title{{border-color:#dfe2ea}}
+.g-label,.prop-escopo,.prop-card-title,.pl,.sl,.prop-tag-group,.prop-total-label,.prop-footer{{color:#5c6280}}
+.g-val,.prop-escopo-title,.pv{{color:#14161d}}
+.prop-linha{{border-bottom:1px solid #eceef3}}
+.prop-tag{{background:#f3f4f8;border:1px solid #dfe2ea;color:#3a3f5c}}
+.prop-total-card{{background:#fbf5e3}} .prop-total-valor{{color:#a8790a}}
+.prop-assinatura{{border-top:1px solid #dfe2ea}}
 html,body{{height:100%}} body{{min-height:1123px;display:flex;flex-direction:column}}
 </style></head><body>
 <div class="prop-header"><img src="{logo}" style="height:30px" alt="PIX2">
@@ -29,13 +42,13 @@ html,body{{height:100%}} body{{min-height:1123px;display:flex;flex-direction:col
 <div class="prop-grid-item"><div class="g-label">Mídias</div><div class="g-val">TV · Redes · Rádio · Eventos</div></div>
 </div>
 <div class="prop-escopo"><div class="prop-escopo-title">Escopo de Trabalho</div>{escopo}</div>
-<div class="prop-card" style="margin:0;border:none;border-bottom:1px solid #22263a;flex:1">
+<div class="prop-card" style="margin:0;border:none;border-bottom:1px solid #dfe2ea;flex:1">
 <div class="prop-card-title">O que está incluído</div>
 <div class="prop-tag-group">Filme de 30 segundos</div><div class="prop-tags">{tags(filme)}</div>
 <div class="prop-tag-group">Spot de 30 segundos</div><div class="prop-tags">{tags(spot)}</div>
 <div class="prop-tag-group">Abrangência</div><div class="prop-tags">{tags(abr)}</div>
 </div>
-<div class="prop-total-card"><div class="prop-total-label">Investimento Total</div><div class="prop-total-valor">R$ 238.350,00</div></div>
+<div class="prop-total-card"><div class="prop-total-label">Investimento Total</div><div class="prop-total-valor">R$ 245.000,00</div></div>
 <div class="prop-assinatura"><div><div class="ass-label">Contratado</div><div class="ass-nome">Murillo Ribeiro</div>
 <div class="ass-sub">{EMP}<br>{CNPJ}</div>
 <div class="ass-linha-dupla"><div class="ass-linha-item">Assinatura</div><div class="ass-linha-item">Carimbo</div></div></div></div>
