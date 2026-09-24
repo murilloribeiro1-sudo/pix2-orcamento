@@ -3,7 +3,7 @@ S = pathlib.Path(sys.argv[1]); OUT = pathlib.Path(sys.argv[2])
 logo = (S/'logo.txt').read_text().strip()
 css = (S/'css.txt').read_text()
 ORC="ORC-2026-250"; DATA="24/09/2026"
-EMP="PIX2 Produção de Conteúdo LTDA"; CNPJ="20.067.159/0001-30"; CID="Campina Grande do Sul/PR"
+EMP="PIX2 Design LTDA"; CNPJ="20.067.159/0001-30"; CID="Campina Grande do Sul/PR"
 def tags(xs): return ''.join(f'<span class="prop-tag">{x}</span>' for x in xs)
 filme=["Filme publicitário 30\"","Produção audiovisual completa","Janela de Libras","Legenda","Condecine","Cópias e liberação para emissora","Veiculação TV e redes sociais","Todas as mídias"]
 spot=["Spot de rádio 30\"","Trilha composta (original)","Veiculação rádio e eventos"]
@@ -51,7 +51,7 @@ html,body{{height:100%}} body{{min-height:1123px;display:flex;flex-direction:col
 <div class="prop-total-card"><div class="prop-total-label">Investimento Total</div><div class="prop-total-valor">R$ 245.000,00</div></div>
 <div class="prop-assinatura"><div><div class="ass-label">Contratado</div><div class="ass-nome">Murillo Ribeiro</div>
 <div class="ass-sub">{EMP}<br>{CNPJ}</div>
-<div class="ass-linha-dupla"><div class="ass-linha-item">Assinatura</div><div class="ass-linha-item">Carimbo</div></div></div></div>
+<div class="ass-linha" style="text-align:left">Documento assinado digitalmente por Murillo Ribeiro · {EMP} · CNPJ {CNPJ} · {DATA}</div></div></div>
 <div class="prop-footer"><span>{EMP} · {CNPJ}</span><span>{CID} · {ORC} · {DATA}</span></div>
 </body></html>"""
 h=OUT/f"{ORC}-proposta-FECHADA.html"; h.write_text(html)
